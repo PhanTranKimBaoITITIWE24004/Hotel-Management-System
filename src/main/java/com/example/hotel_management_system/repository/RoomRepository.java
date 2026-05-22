@@ -1,12 +1,14 @@
-package com.example.hotel_management.repository;
+package com.example.hotel_management_system.repository;
 
-import com.example.hotel_management.model.Room;
-import com.example.hotel_management.model.Room.RoomStatus;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import java.time.LocalDate;
-import java.util.List;
+
+import com.example.hotel_management_system.model.Room;
+import com.example.hotel_management_system.model.Room.RoomStatus;
 
 
 public interface RoomRepository extends JpaRepository<Room, Long> {

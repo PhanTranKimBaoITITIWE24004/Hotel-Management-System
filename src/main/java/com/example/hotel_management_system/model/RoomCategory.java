@@ -1,8 +1,14 @@
-package com.example.hotel_management.model;
+package com.example.hotel_management_system.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Data                    // Lombok: auto-generates getters, setters, toString
 @Entity                  // tells Spring: make a table for this class

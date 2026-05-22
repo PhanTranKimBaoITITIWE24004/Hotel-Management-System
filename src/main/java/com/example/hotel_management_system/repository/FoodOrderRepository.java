@@ -1,13 +1,14 @@
-package com.example.hotel_management.repository;
+package com.example.hotel_management_system.repository;
 
-import com.example.hotel_management.model.FoodOrder;
-import com.example.hotel_management.model.FoodOrder.OrderStatus;
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
-import java.util.List;
+import com.example.hotel_management_system.model.FoodOrder;
+import com.example.hotel_management_system.model.FoodOrder.OrderStatus;
 
 public interface FoodOrderRepository extends JpaRepository<FoodOrder, Long> {
 

@@ -1,4 +1,4 @@
-package com.example.hotel_management_system.model;
+package com.example.hotel_management_system.repository;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

@@ -1,4 +1,4 @@
-package com.example.hotel_management.model;
+package com.example.hotel_management_system.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

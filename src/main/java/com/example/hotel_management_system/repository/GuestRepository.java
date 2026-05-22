@@ -1,10 +1,12 @@
-package com.example.hotel_management.repository;
+package com.example.hotel_management_system.repository;
 
 
-import com.example.hotel_management.model.Guest;
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.hotel_management_system.model.Guest;
 
 public interface GuestRepository extends JpaRepository<Guest, Long> {
 

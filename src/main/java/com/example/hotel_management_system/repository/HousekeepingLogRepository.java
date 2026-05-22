@@ -1,13 +1,14 @@
-package com.example.hotel_management.repository;
+package com.example.hotel_management_system.repository;
 
-import com.example.hotel_management.model.HousekeepingLog;
-import com.example.hotel_management.model.HousekeepingLog.TaskStatus;
-import com.example.hotel_management.model.HousekeepingLog.TaskType;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.example.hotel_management_system.model.HousekeepingLog;
+import com.example.hotel_management_system.model.HousekeepingLog.TaskStatus;
+import com.example.hotel_management_system.model.HousekeepingLog.TaskType;
 
 public interface HousekeepingLogRepository extends JpaRepository<HousekeepingLog, Long> {
 

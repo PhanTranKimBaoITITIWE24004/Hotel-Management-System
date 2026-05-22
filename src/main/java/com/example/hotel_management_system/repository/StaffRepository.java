@@ -1,12 +1,13 @@
-package com.example.hotel_management.repository;
-
-import com.example.hotel_management.model.Staff;
-import com.example.hotel_management.model.Staff.StaffRole;
-import com.example.hotel_management.model.Staff.StaffStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
+package com.example.hotel_management_system.repository;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.hotel_management_system.model.Staff;
+import com.example.hotel_management_system.model.Staff.StaffRole;
+import com.example.hotel_management_system.model.Staff.StaffStatus;
 
 public interface StaffRepository extends JpaRepository<Staff, Long> {
 

@@ -1,12 +1,13 @@
-package com.example.hotel_management.repository;
-
-import com.example.hotel_management.model.Inventory;
-import com.example.hotel_management.model.Inventory.ItemCategory;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+package com.example.hotel_management_system.repository;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.hotel_management_system.model.Inventory;
+import com.example.hotel_management_system.model.Inventory.ItemCategory;
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     // Find by exact item name
