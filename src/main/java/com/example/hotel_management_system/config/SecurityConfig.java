@@ -2,6 +2,7 @@ package com.example.hotel_management_system.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,6 +26,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disabled for local development and testing convenience
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/main.css", "/api/auth/login", "/api/auth/logout").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/rooms/available").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/bookings").permitAll()
                 .requestMatchers("/api/staff/**").hasRole("ADMIN")
                 .requestMatchers("/api/bills/**").hasAnyRole("ADMIN", "RECEPTIONIST")
                 .anyRequest().authenticated()
