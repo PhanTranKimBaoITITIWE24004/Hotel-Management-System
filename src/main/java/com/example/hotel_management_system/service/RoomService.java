@@ -4,6 +4,7 @@ import com.example.hotel_management_system.dto.RoomDTO;
 import com.example.hotel_management_system.model.Room;
 import com.example.hotel_management_system.model.RoomCategory;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface RoomService {
@@ -16,4 +17,7 @@ public interface RoomService {
     List<RoomCategory> getAllCategories();
     RoomCategory getCategoryById(Long id);
     RoomCategory createCategory(RoomCategory category);
+    List<RoomDTO> getAvailableRooms(LocalDate checkIn, LocalDate checkOut);
+    RoomCategory updateCategory(Long id, RoomCategory categoryDetails);
+    void deleteCategory(Long id);
 }

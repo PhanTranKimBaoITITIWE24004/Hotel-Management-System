@@ -43,4 +43,15 @@ public class InventoryRestController {
         }
         return ResponseEntity.ok(inventoryService.updateInventoryQuantity(id, quantity));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Inventory> updateInventoryItem(@PathVariable Long id, @RequestBody Inventory itemDetails) {
+        return ResponseEntity.ok(inventoryService.updateInventoryItem(id, itemDetails));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInventoryItem(@PathVariable Long id) {
+        inventoryService.deleteInventoryItem(id);
+        return ResponseEntity.ok().build();
+    }
 }

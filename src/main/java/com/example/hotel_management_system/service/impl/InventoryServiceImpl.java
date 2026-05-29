@@ -49,4 +49,21 @@ public class InventoryServiceImpl implements InventoryService {
                 .filter(Inventory::isLowStock)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Inventory updateInventoryItem(Long id, Inventory itemDetails) {
+        Inventory item = getInventoryById(id);
+        item.setItemName(itemDetails.getItemName());
+        item.setCategory(itemDetails.getCategory());
+        item.setQuantity(itemDetails.getQuantity());
+        item.setLowStockThreshold(itemDetails.getLowStockThreshold());
+        item.setUnit(itemDetails.getUnit());
+        return inventoryRepository.save(item);
+    }
+
+    @Override
+    public void deleteInventoryItem(Long id) {
+        Inventory item = getInventoryById(id);
+        inventoryRepository.delete(item);
+    }
 }

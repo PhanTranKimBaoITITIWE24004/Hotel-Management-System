@@ -31,6 +31,8 @@ public class BookingRequestDTO {
     @NotBlank(message = "Payment method is required (CASH or ONLINE)")
     private String paymentMethod;
 
+    private String idType;
+
     public BookingRequestDTO() {}
 
     // Getters and Setters
@@ -50,4 +52,6 @@ public class BookingRequestDTO {
     public void setCheckOutDate(LocalDate checkOutDate) { this.checkOutDate = checkOutDate; }
     public String getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public String getIdType() { return idType; }
+    public void setIdType(String idType) { this.idType = idType; }
 }

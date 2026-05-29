@@ -21,7 +21,7 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public Guest getOrCreateGuest(String fullName, String email, String phone, String idNumber) {
+    public Guest getOrCreateGuest(String fullName, String email, String phone, String idType, String idNumber) {
         // Try to find by email first
         Optional<Guest> existingByEmail = guestRepository.findByEmail(email);
         if (existingByEmail.isPresent()) {
@@ -40,8 +40,30 @@ public class GuestServiceImpl implements GuestService {
         newGuest.setEmail(email);
         newGuest.setPhone(phone);
         newGuest.setIdNumber(idNumber);
-        newGuest.setIdType(Guest.IdType.NATIONAL_ID); // Defaulting to National ID
+        if (idType != null) {
+            try {
+                newGuest.setIdType(Guest.IdType.valueOf(idType.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                newGuest.setIdType(Guest.IdType.NATIONAL_ID); // Fallback
+            }
+        } else {
+            newGuest.setIdType(Guest.IdType.NATIONAL_ID); // Defaulting to National ID
+        }
         return guestRepository.save(newGuest);
+    }
+
+    @Override
+    public Guest createGuest(Guest guest) {
+        if (guest.getEmail() != null && guestRepository.findByEmail(guest.getEmail()).isPresent()) {
+            throw new IllegalStateException("Guest with email " + guest.getEmail() + " already exists");
+        }
+        if (guest.getIdNumber() != null && guestRepository.findByIdNumber(guest.getIdNumber()).isPresent()) {
+            throw new IllegalStateException("Guest with ID number " + guest.getIdNumber() + " already exists");
+        }
+        if (guest.getIdType() == null) {
+            guest.setIdType(Guest.IdType.NATIONAL_ID);
+        }
+        return guestRepository.save(guest);
     }
 
     @Override

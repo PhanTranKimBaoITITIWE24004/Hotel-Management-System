@@ -9,4 +9,6 @@ public interface InventoryService {
     Inventory createInventoryItem(Inventory item);
     Inventory updateInventoryQuantity(Long id, Integer quantity);
     List<Inventory> getLowStockItems();
+    Inventory updateInventoryItem(Long id, Inventory itemDetails);
+    void deleteInventoryItem(Long id);
 }

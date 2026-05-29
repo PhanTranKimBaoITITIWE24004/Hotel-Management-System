@@ -21,7 +21,10 @@ public class BookingRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings(@RequestParam(required = false) Long guestId) {
+        if (guestId != null) {
+            return ResponseEntity.ok(bookingService.getBookingsByGuestId(guestId));
+        }
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 

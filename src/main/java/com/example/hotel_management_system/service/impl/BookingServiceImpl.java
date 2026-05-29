@@ -46,11 +46,18 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException("Room " + room.getRoomNumber() + " is not available for booking (Current status: " + room.getStatus() + ")");
         }
 
+        // Check if room is already booked for the given dates
+        if (bookingRepository.isRoomBooked(request.getRoomId(), request.getCheckInDate(), request.getCheckOutDate())) {
+            throw new IllegalStateException("Room " + room.getRoomNumber() + " is already booked during the selected dates: " 
+                    + request.getCheckInDate() + " to " + request.getCheckOutDate());
+        }
+
         // Retrieve or register guest
         Guest guest = guestService.getOrCreateGuest(
                 request.getGuestName(),
                 request.getGuestEmail(),
                 request.getGuestPhone(),
+                request.getIdType(),
                 request.getGuestIdNumber()
         );
 
@@ -132,6 +139,13 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(Booking.BookingStatus.CANCELLED);
         Booking savedBooking = bookingRepository.save(booking);
         return convertToDTO(savedBooking);
+    }
+
+    @Override
+    public List<BookingResponseDTO> getBookingsByGuestId(Long guestId) {
+        return bookingRepository.findByGuestId(guestId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     private BookingResponseDTO convertToDTO(Booking booking) {

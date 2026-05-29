@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +56,33 @@ public class RoomRestController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/available")
+    public ResponseEntity<List<RoomDTO>> getAvailableRooms(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut) {
+        return ResponseEntity.ok(roomService.getAvailableRooms(checkIn, checkOut));
+    }
+
     @GetMapping("/categories")
     public ResponseEntity<List<RoomCategory>> getAllCategories() {
         return ResponseEntity.ok(roomService.getAllCategories());
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<RoomCategory> createCategory(@RequestBody RoomCategory category) {
+        RoomCategory created = roomService.createCategory(category);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<RoomCategory> updateCategory(@PathVariable Long id, @RequestBody RoomCategory categoryDetails) {
+        RoomCategory updated = roomService.updateCategory(id, categoryDetails);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        roomService.deleteCategory(id);
+        return ResponseEntity.ok().build();
     }
 }

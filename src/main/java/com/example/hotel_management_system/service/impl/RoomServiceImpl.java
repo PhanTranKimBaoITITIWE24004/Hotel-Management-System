@@ -10,6 +10,7 @@ import com.example.hotel_management_system.service.RoomService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,31 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomCategory createCategory(RoomCategory category) {
         return roomCategoryRepository.save(category);
+    }
+
+    @Override
+    public List<RoomDTO> getAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
+        return roomRepository.findAvailableRooms(checkIn, checkOut).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public RoomCategory updateCategory(Long id, RoomCategory categoryDetails) {
+        RoomCategory category = getCategoryById(id);
+        category.setName(categoryDetails.getName());
+        category.setPricePerNight(categoryDetails.getPricePerNight());
+        category.setDescription(categoryDetails.getDescription());
+        if (categoryDetails.getMaxOccupancy() != null) {
+            category.setMaxOccupancy(categoryDetails.getMaxOccupancy());
+        }
+        return roomCategoryRepository.save(category);
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        RoomCategory category = getCategoryById(id);
+        roomCategoryRepository.delete(category);
     }
 
     private RoomDTO convertToDTO(Room room) {

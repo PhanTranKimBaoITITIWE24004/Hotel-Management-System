@@ -1,5 +1,6 @@
 package com.example.hotel_management_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,7 @@ public class Staff {
     private String email;
 
     // Stored as bcrypt hash — never store plain text passwords
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
