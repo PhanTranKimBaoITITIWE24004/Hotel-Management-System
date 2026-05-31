@@ -1,9 +1,19 @@
 package com.example.hotel_management_system.controller.api;
 
+<<<<<<< HEAD
+=======
+import com.example.hotel_management_system.model.FoodOrder;
+import com.example.hotel_management_system.service.FoodOrderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+>>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.hotel_management_system.model.FoodOrder;
 import com.example.hotel_management_system.service.FoodOrderService;
 
+=======
+>>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
 @RestController
 @RequestMapping("/api/food-orders")
 public class FoodOrderRestController {

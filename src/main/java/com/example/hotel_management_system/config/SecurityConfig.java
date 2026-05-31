@@ -25,7 +25,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disabled for local development and testing convenience
             .authorizeHttpRequests(auth -> auth
+<<<<<<< HEAD
                 .requestMatchers("/", "/login", "/main.css", "/js/**", "/api/auth/login", "/api/auth/logout").permitAll()
+=======
+                .requestMatchers("/", "/login", "/main.css", "/api/auth/login", "/api/auth/logout").permitAll()
+>>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
                 .requestMatchers(HttpMethod.GET, "/api/rooms/available").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/bookings").permitAll()
                 .requestMatchers("/api/staff/**").hasRole("ADMIN")
