@@ -6,25 +6,56 @@
 <div class="main-wrapper">
   <div th:replace="fragments/topbar :: topbar('Guests','Front Desk / Guest directory')"></div>
   <div class="page-content">
-    <div class="page-header"><div><div class="page-title-h1">Guest Directory</div></div></div>
+
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="page-title-h1">Guest Directory</div>
+        <div class="page-title-sub">
+          <span th:text="${guests != null ? #lists.size(guests) : 0}">0</span> registered guests
+        </div>
+      </div>
+      <div class="page-header-actions">
+        <a th:href="@{/guests/new}" class="btn btn-gold">Register Guest</a>
+      </div>
+    </div>
+
     <div class="card">
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <input id="guest-search" class="search-input" type="text"
+                 placeholder="Search by name, email or ID…">
+        </div>
+        <span class="result-count" id="guest-search-count"></span>
+      </div>
+
       <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>Guest</th><th>Contact</th><th>ID Type</th><th>ID Number</th></tr></thead>
+        <table class="data-table" id="guests-table">
+          <thead>
+            <tr><th>Guest</th><th>Contact</th><th>ID Type</th><th>ID Number</th><th></th></tr>
+          </thead>
           <tbody>
             <tr th:each="g : ${guests}">
-              <td th:text="${g.fullName}">Name</td>
-              <td th:text="${g.email != null ? g.email : g.phone}">Contact</td>
-              <td th:text="${g.idType}">PASSPORT</td>
-              <td th:text="${g.idNumber}">123</td>
+              <td style="font-weight:500" th:text="${g.fullName}">Name</td>
+              <td th:text="${g.email != null ? g.email : (g.phone != null ? g.phone : '—')}">Contact</td>
+              <td><span class="badge badge-navy" th:text="${g.idType}">PASSPORT</span></td>
+              <td style="font-family:var(--fd)" th:text="${g.idNumber}">123</td>
+              <td class="actions">
+                <a th:href="@{/guests/{id}/edit(id=${g.id})}" class="btn btn-outline btn-xs">Edit</a>
+              </td>
             </tr>
-            <tr th:if="${guests == null or #lists.isEmpty(guests)}"><td colspan="4" class="table-empty">No guests registered yet</td></tr>
+            <tr th:if="${guests == null or #lists.isEmpty(guests)}">
+              <td colspan="5" class="table-empty">No guests registered yet</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
-<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/main.js}"></script>
+<script>
+  // wire the search box to the guests table (defined in main.js)
+  liveSearch('guest-search', 'guests-table');
+</script>
 </body>
 </html>

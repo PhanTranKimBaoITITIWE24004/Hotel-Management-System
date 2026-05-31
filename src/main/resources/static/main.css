@@ -85,7 +85,7 @@ button, input, select, textarea { font-family: var(--fb); }
   background: var(--white);
   border-radius: var(--r-lg);
   padding: 48px;
-  width: 240px;
+  width: 420px;
   max-width: calc(100vw - 32px);
   box-shadow: var(--sh-lg);
 }

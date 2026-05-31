@@ -3,9 +3,17 @@ package com.example.hotel_management_system.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.hotel_management_system.dto.BookingRequestDTO;
+import com.example.hotel_management_system.model.Guest;
+import com.example.hotel_management_system.model.Room;
 import com.example.hotel_management_system.repository.BillRepository;
 import com.example.hotel_management_system.service.BookingService;
+import com.example.hotel_management_system.service.GuestService;
 import com.example.hotel_management_system.service.HousekeepingService;
 import com.example.hotel_management_system.service.InventoryService;
 import com.example.hotel_management_system.service.RoomService;
@@ -19,6 +27,7 @@ public class ViewController {
     private final HousekeepingService housekeepingService;
     private final InventoryService inventoryService;
     private final StaffService staffService;
+    private final GuestService guestService;
     private final BillRepository billRepository;
 
     public ViewController(RoomService roomService,
@@ -26,12 +35,14 @@ public class ViewController {
                           HousekeepingService housekeepingService,
                           InventoryService inventoryService,
                           StaffService staffService,
+                          GuestService guestService,
                           BillRepository billRepository) {
         this.roomService = roomService;
         this.bookingService = bookingService;
         this.housekeepingService = housekeepingService;
         this.inventoryService = inventoryService;
         this.staffService = staffService;
+        this.guestService = guestService;
         this.billRepository = billRepository;
     }
 
@@ -52,11 +63,49 @@ public class ViewController {
         return "dashboard"; // Maps to templates/dashboard.html
     }
 
+    // ─────────────── Rooms ───────────────
+
     @GetMapping("/rooms")
     public String rooms(Model model) {
-        model.addAttribute("rooms", roomService.getAllRooms());
-        model.addAttribute("categories", roomService.getAllCategories());
+        var rooms = roomService.getAllRooms();
+        var categories = roomService.getAllCategories();
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("categories", categories);
+        model.addAttribute("totalRooms", rooms.size());          
+        model.addAttribute("totalCategories", categories.size());
         return "rooms/list";
+    }
+
+    @GetMapping("/rooms/new")
+    public String newRoomForm(Model model) {
+        model.addAttribute("room", new Room());
+        model.addAttribute("categories", roomService.getAllCategories());
+        return "rooms/form";
+    }
+
+    @GetMapping("/rooms/{id}/edit")
+    public String editRoomForm(@PathVariable Long id, Model model) {
+        model.addAttribute("room", roomService.getRoomById(id));
+        model.addAttribute("categories", roomService.getAllCategories());
+        return "rooms/form";
+    }
+
+    @PostMapping("/rooms")
+    public String saveRoom(@ModelAttribute("room") Room room,
+                           @RequestParam(required = false) Long categoryId,
+                           Model model) {
+        try {
+            if (room.getId() == null) {
+                roomService.createRoom(room, categoryId);
+            } else {
+                roomService.updateRoom(room.getId(), room, categoryId);
+            }
+            return "redirect:/rooms";
+        } catch (RuntimeException ex) {                 // re-show form on failure
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("categories", roomService.getAllCategories());
+            return "rooms/form";
+        }
     }
 
     @GetMapping("/bookings")
@@ -67,15 +116,43 @@ public class ViewController {
 
     @GetMapping({"/bookings/new", "/bookings/form"})
     public String bookingForm(Model model) {
-        model.addAttribute("booking", new com.example.hotel_management_system.dto.BookingRequestDTO());
+        model.addAttribute("booking", new BookingRequestDTO());
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("categories", roomService.getAllCategories());
         return "bookings/form";
     }
 
     @GetMapping("/guests")
-    public String guests() {
+    public String guests(Model model) {
+        model.addAttribute("guests", guestService.getAllGuests());
         return "guests/list";
+    }
+
+    @GetMapping("/guests/new")
+    public String newGuestForm(Model model) {
+        model.addAttribute("guest", new Guest());
+        return "guests/form";
+    }
+
+    @GetMapping("/guests/{id}/edit")
+    public String editGuestForm(@PathVariable Long id, Model model) {
+        model.addAttribute("guest", guestService.getGuestById(id));
+        return "guests/form";
+    }
+
+    @PostMapping("/guests")
+    public String saveGuest(@ModelAttribute("guest") Guest guest, Model model) {
+        try {
+            if (guest.getId() == null) {
+                guestService.createGuest(guest);
+            } else {
+                guestService.updateGuest(guest.getId(), guest);
+            }
+            return "redirect:/guests";
+        } catch (RuntimeException ex) {                 // re-show form on failure
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "guests/form";
+        }
     }
 
     @GetMapping("/staff")
