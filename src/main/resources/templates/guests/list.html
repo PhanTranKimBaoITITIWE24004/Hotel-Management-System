@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Guests')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('guests')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Guests','Front Desk / Guest directory')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Guest Directory</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Guest</th><th>Contact</th><th>ID Type</th><th>ID Number</th></tr></thead>
+          <tbody>
+            <tr th:each="g : ${guests}">
+              <td th:text="${g.fullName}">Name</td>
+              <td th:text="${g.email != null ? g.email : g.phone}">Contact</td>
+              <td th:text="${g.idType}">PASSPORT</td>
+              <td th:text="${g.idNumber}">123</td>
+            </tr>
+            <tr th:if="${guests == null or #lists.isEmpty(guests)}"><td colspan="4" class="table-empty">No guests registered yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

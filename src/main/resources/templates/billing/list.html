@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Billing')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('billing')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Billing','Billing')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Billing</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Invoice</th><th>Booking</th><th>Guest</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr th:each="bill : ${bills}">
+              <td th:text="'#INV-' + ${bill.id}">#INV-1</td>
+              <td th:text="${bill.booking != null ? '#BK-' + bill.booking.id : '-'}">#BK-1</td>
+              <td th:text="${bill.booking != null && bill.booking.guest != null ? bill.booking.guest.fullName : '-'}">Guest</td>
+              <td th:text="${bill.totalAmount}">0</td>
+              <td th:text="${bill.status}">UNPAID</td>
+            </tr>
+            <tr th:if="${bills == null or #lists.isEmpty(bills)}"><td colspan="5" class="table-empty">No invoices found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

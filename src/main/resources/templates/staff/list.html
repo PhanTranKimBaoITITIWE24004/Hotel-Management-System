@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Staff')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('staff')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Staff Management','Staff')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Staff Management</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr th:each="s : ${staffList}">
+              <td th:text="${s.fullName}">Name</td>
+              <td th:text="${s.email}">email</td>
+              <td th:text="${s.phone}">phone</td>
+              <td th:text="${s.role}">ROLE</td>
+              <td th:text="${s.status}">STATUS</td>
+            </tr>
+            <tr th:if="${staffList == null or #lists.isEmpty(staffList)}"><td colspan="5" class="table-empty">No staff members found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

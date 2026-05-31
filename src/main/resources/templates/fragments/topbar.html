@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--/* Topbar — usage: <header th:replace="fragments/topbar :: topbar('Dashboard','Overview')"></header> */-->
+<header th:fragment="topbar(title, breadcrumb)" class="topbar">
+  <div>
+    <div class="topbar-title" th:text="${title}">Dashboard</div>
+    <div class="topbar-bc" th:if="${breadcrumb}" th:text="${breadcrumb}">Overview</div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-date" th:text="${#dates.format(#dates.createNow(), 'EEEE, dd MMMM yyyy')}">
+      Saturday, 31 May 2026
+    </span>
+    <a th:href="@{/}" class="icon-btn" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+      </svg>
+      <span class="notif-dot" th:if="${lowStockCount != null and lowStockCount > 0}"></span>
+    </a>
+  </div>
+</header>
+</body>
+</html>

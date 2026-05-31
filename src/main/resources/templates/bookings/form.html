@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('New Booking')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('bookings')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('New Booking','Front Desk / Reservations')"></div>
+  <div class="page-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title-h1">Create Booking</div>
+        <div class="page-title-sub">Select a guest and an available room to create a reservation</div>
+      </div>
+      <div class="page-header-actions">
+        <a th:href="@{/bookings}" class="btn btn-outline">Back to Bookings</a>
+      </div>
+    </div>
+
+    <div class="card" style="max-width: 980px;">
+      <form th:action="@{/api/bookings}" method="post" id="booking-create-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="guestId" class="required">Guest</label>
+            <select id="guestId" name="guestId" class="form-control" required>
+              <option value="">Select guest</option>
+              <option th:each="g : ${guests}" th:value="${g.id}" th:text="${g.fullName}">Guest</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="roomId" class="required">Room</label>
+            <select id="roomId" name="roomId" class="form-control" required>
+              <option value="">Select room</option>
+              <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.roomNumber + ' — ' + (r.categoryName != null ? r.categoryName : 'Room')}">101</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="checkInDate" class="required">Check-in Date</label>
+            <input id="checkInDate" name="checkInDate" type="date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="checkOutDate" class="required">Check-out Date</label>
+            <input id="checkOutDate" name="checkOutDate" type="date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="paymentMethod" class="required">Payment Method</label>
+            <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+              <option value="ONLINE">Online</option>
+              <option value="CASH">Cash</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="status">Status</label>
+            <input id="status" class="form-control" value="RESERVED" disabled>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+          <a th:href="@{/bookings}" class="btn btn-outline">Cancel</a>
+          <button type="submit" class="btn btn-gold">Create Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

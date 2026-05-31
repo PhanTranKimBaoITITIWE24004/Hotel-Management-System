@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head(${staff.id == null ? 'Add Staff' : 'Edit Staff'})">
+  <link rel="stylesheet" href="/main.css" th:href="@{/main.css}">
+</head>
+<body>
+<div style="display:flex">
+  <div th:replace="fragments/sidebar :: sidebar('staff')"></div>
+  <div class="main-wrapper">
+    <div th:replace="fragments/topbar :: topbar(
+      ${staff.id == null ? 'Add Staff Member' : 'Edit Staff Member'},
+      'Staff / ' + ${staff.id == null ? 'New' : staff.fullName})"></div>
+    <div class="page-content">
+      <div style="max-width:720px;margin:0 auto">
+
+        <div class="page-header" style="margin-bottom:20px">
+          <div>
+            <h1 class="page-title-h1"
+                th:text="${staff.id == null ? 'Add New Staff Member' : 'Edit ' + staff.fullName}">Staff</h1>
+            <p class="page-title-sub">Account and role configuration</p>
+          </div>
+          <a th:href="@{/staff}" class="btn btn-outline">← Back to Staff</a>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"
+                 th:text="${staff.id == null ? 'Staff Details' : 'Update Staff Details'}">Details</div>
+          </div>
+          <div class="card-body">
+            <form th:action="${staff.id == null ? '/staff/save' : '/staff/' + staff.id + '/update'}"
+                  th:object="${staff}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <input type="hidden" th:if="${staff.id != null}" th:field="*{id}">
+
+              <!-- Personal -->
+              <div class="form-section-title">Personal Information</div>
+              <div class="form-group">
+                <label for="fullName" class="required">Full Name</label>
+                <input id="fullName" th:field="*{fullName}" type="text"
+                       class="form-control" th:classappend="${#fields.hasErrors('fullName')} ? ' is-invalid'"
+                       placeholder="Full legal name" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}"
+                     th:errors="*{fullName}"></div>
+              </div>
+
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group mb-0">
+                  <label for="email" class="required">Email Address</label>
+                  <input id="email" th:field="*{email}" type="email"
+                         class="form-control" th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'"
+                         placeholder="staff@luxestay.com" required>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                       th:errors="*{email}"></div>
+                </div>
+                <div class="form-group mb-0">
+                  <label for="phone">Phone Number</label>
+                  <input id="phone" th:field="*{phone}" type="tel"
+                         class="form-control" placeholder="+1 (555) 000-0000">
+                </div>
+              </div>
+
+              <!-- Role & Status -->
+              <div class="form-section-title">Role &amp; Access</div>
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group mb-0">
+                  <label for="role" class="required">Staff Role</label>
+                  <select id="role" th:field="*{role}" class="form-control"
+                          th:classappend="${#fields.hasErrors('role')} ? ' is-invalid'" required>
+                    <option value="">Select role</option>
+                    <option value="ADMIN">Admin — Full system access</option>
+                    <option value="RECEPTIONIST">Receptionist — Bookings &amp; billing</option>
+                    <option value="HOUSEKEEPING">Housekeeping — Room cleaning tasks</option>
+                    <option value="FOOD_SERVICE">Food Service — Kitchen &amp; orders</option>
+                  </select>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('role')}"
+                       th:errors="*{role}"></div>
+                </div>
+                <div class="form-group mb-0">
+                  <label for="status" class="required">Status</label>
+                  <select id="status" th:field="*{status}" class="form-control" required>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Password (new staff only) -->
+              <div th:if="${staff.id == null}">
+                <div class="form-section-title">Password</div>
+                <div class="form-row" style="margin-bottom:4px">
+                  <div class="form-group mb-0">
+                    <label for="password" class="required">Password</label>
+                    <input id="password" name="password" type="password"
+                           class="form-control"
+                           placeholder="Min. 8 characters" required minlength="8">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label for="confirmPassword" class="required">Confirm Password</label>
+                    <input id="confirmPassword" name="confirmPassword" type="password"
+                           class="form-control" placeholder="Re-enter password" required>
+                  </div>
+                </div>
+                <p class="form-hint" style="margin-bottom:16px">
+                  Password must be at least 8 characters. Staff will be prompted to change it on first login.
+                </p>
+              </div>
+
+              <!-- Role permissions info -->
+              <div id="role-info"
+                   style="background:var(--cream);border-radius:var(--r);padding:14px 16px;
+                          margin-bottom:20px;font-size:13px;color:var(--muted);display:none">
+                <strong style="color:var(--text)">Role Permissions: </strong>
+                <span id="role-info-text"></span>
+              </div>
+
+              <div class="form-actions">
+                <a th:href="@{/staff}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-gold"
+                        th:text="${staff.id == null ? 'Create Account' : 'Save Changes'}">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Change password card (edit mode only) -->
+        <div class="card" th:if="${staff.id != null}" style="margin-top:20px">
+          <div class="card-header">
+            <div class="card-title">Change Password</div>
+          </div>
+          <div class="card-body">
+            <form th:action="@{/staff/{id}/change-password(id=${staff.id})}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group mb-0">
+                  <label for="newPassword" class="required">New Password</label>
+                  <input id="newPassword" name="newPassword" type="password"
+                         class="form-control" placeholder="New password" required minlength="8">
+                </div>
+                <div class="form-group mb-0">
+                  <label for="confirmNewPassword" class="required">Confirm Password</label>
+                  <input id="confirmNewPassword" name="confirmNewPassword" type="password"
+                         class="form-control" placeholder="Confirm new password" required>
+                </div>
+              </div>
+              <div class="form-actions" style="padding-top:0;border-top:none">
+                <button type="submit" class="btn btn-navy">Update Password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+<script>
+  const roleDescriptions = {
+    ADMIN:         'Full access to all modules, user management, reports and settings.',
+    RECEPTIONIST:  'Can manage bookings, check-ins/outs, guests and generate bills.',
+    HOUSEKEEPING:  'Can view and update room cleaning tasks and housekeeping logs.',
+    FOOD_SERVICE:  'Can create and manage room service food orders.',
+  };
+  const roleSelect = document.getElementById('role');
+  const infoBox    = document.getElementById('role-info');
+  const infoText   = document.getElementById('role-info-text');
+
+  function updateRoleInfo() {
+    const val = roleSelect.value;
+    if (val && roleDescriptions[val]) {
+      infoText.textContent = roleDescriptions[val];
+      infoBox.style.display = 'block';
+    } else {
+      infoBox.style.display = 'none';
+    }
+  }
+  roleSelect?.addEventListener('change', updateRoleInfo);
+  updateRoleInfo();
+
+  // Password match validation
+  const pw  = document.getElementById('password');
+  const cpw = document.getElementById('confirmPassword');
+  cpw?.addEventListener('input', () => {
+    cpw.setCustomValidity(cpw.value !== pw.value ? 'Passwords do not match.' : '');
+  });
+</script>
+</body>
+</html>

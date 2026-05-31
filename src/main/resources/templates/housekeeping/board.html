@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Housekeeping')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('housekeeping')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Housekeeping','Operations / Task board')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Housekeeping Board</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Room</th><th>Task Type</th><th>Status</th><th>Staff</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr th:each="t : ${housekeepingTasks}">
+              <td th:text="${t.room != null ? t.room.roomNumber : '-'}">101</td>
+              <td th:text="${t.taskType}">CLEANING</td>
+              <td th:text="${t.status}">PENDING</td>
+              <td th:text="${t.staff != null ? t.staff.fullName : '-'}">Hoa</td>
+              <td th:text="${t.notes}">Notes</td>
+            </tr>
+            <tr th:if="${housekeepingTasks == null or #lists.isEmpty(housekeepingTasks)}"><td colspan="5" class="table-empty">No housekeeping tasks found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

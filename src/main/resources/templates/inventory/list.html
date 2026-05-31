@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Inventory')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('inventory')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Inventory','Inventory')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Inventory</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Item</th><th>Category</th><th>Qty</th><th>Threshold</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr th:each="item : ${inventory}">
+              <td th:text="${item.itemName}">Item</td>
+              <td th:text="${item.category}">Category</td>
+              <td th:text="${item.quantity}">0</td>
+              <td th:text="${item.lowStockThreshold}">0</td>
+              <td th:text="${item.updatedAt}">Date</td>
+            </tr>
+            <tr th:if="${inventory == null or #lists.isEmpty(inventory)}"><td colspan="5" class="table-empty">No inventory items found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

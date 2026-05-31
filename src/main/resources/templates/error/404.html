@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Page Not Found')"></head>
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--cream)">
+  <div style="text-align:center;max-width:480px;padding:40px 20px">
+    <div style="font-family:var(--fd);font-size:96px;font-weight:600;color:var(--navy);line-height:1;opacity:.15">404</div>
+    <div style="font-family:var(--fd);font-size:26px;color:var(--navy);margin-bottom:10px">Page Not Found</div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:28px">
+      The page you are looking for doesn't exist or has been moved.
+    </p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <a th:href="@{/dashboard}" class="btn btn-navy">Go to Dashboard</a>
+      <a onclick="history.back()" href="#" class="btn btn-outline">Go Back</a>
+    </div>
+  </div>
+</body>
+</html>

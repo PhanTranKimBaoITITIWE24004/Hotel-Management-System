@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}">
+  <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}">
+  <title th:text="${title} + ' — LuxeStay HMS'">LuxeStay HMS</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23C4973D' d='M12 2L2 7v10l10 5 10-5V7L12 2z'/></svg>">
+  <link rel="stylesheet" th:href="@{/main.css}">
+</head>
+</html>

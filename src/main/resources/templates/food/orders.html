@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Food Orders')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('food')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Food Orders','Kitchen / Orders')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Food Orders</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>Booking</th><th>Item</th><th>Qty</th><th>Status</th><th>Ordered At</th></tr></thead>
+          <tbody>
+            <tr th:each="o : ${orders}">
+              <td th:text="${o.booking != null ? '#BK-' + o.booking.id : '-'}">#BK-1</td>
+              <td th:text="${o.itemName}">Item</td>
+              <td th:text="${o.quantity}">1</td>
+              <td th:text="${o.status}">PREPARING</td>
+              <td th:text="${o.orderedAt}">Date</td>
+            </tr>
+            <tr th:if="${orders == null or #lists.isEmpty(orders)}"><td colspan="5" class="table-empty">No food orders found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

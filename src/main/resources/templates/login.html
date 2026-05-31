@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Login')"></head>
+<body class="login-page">
+  <div class="login-card" style="width: 920px; max-width: calc(100vw - 32px);">
+    <div style="display:grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: stretch;">
+
+      <div style="padding: 12px 6px 12px 0;">
+        <div class="login-logo" style="margin-bottom: 22px;">
+          <div class="login-logo-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>
+          </div>
+          <div>
+            <div class="login-brand">LuxeStay</div>
+            <div class="login-tagline">Hotel Management System</div>
+          </div>
+        </div>
+
+        <div class="login-heading">Welcome back</div>
+        <div class="login-sub">Sign in using one of the database-backed staff accounts</div>
+
+        <div th:if="${param.error}" class="alert alert-danger" data-auto-dismiss style="margin-top:18px;">
+          Invalid email or password. Please try again.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success" data-auto-dismiss style="margin-top:18px;">
+          You have been signed out successfully.
+        </div>
+        <div th:if="${param.expired}" class="alert alert-danger" data-auto-dismiss style="margin-top:18px;">
+          Your session has expired. Please sign in again.
+        </div>
+
+        <form th:action="@{/login}" method="post" id="loginForm" style="margin-top: 20px;">
+          <div class="form-group">
+            <label for="role">Quick Role</label>
+            <select id="role" class="form-control" onchange="fillDemoAccount()">
+              <option value="ADMIN">Admin</option>
+              <option value="RECEPTIONIST" selected>Receptionist</option>
+              <option value="HOUSEKEEPING">Housekeeping</option>
+            </select>
+            <p class="form-hint">This fills in a matching database account for convenience.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="username">Email Address</label>
+            <input id="username" name="username" type="email" class="form-control"
+                   placeholder="admin@luxestay.com" autocomplete="email" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" class="form-control"
+                   placeholder="password123" autocomplete="current-password" required>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <label style="display:flex; align-items:center; gap:7px; font-size:13px; cursor:pointer; color:var(--muted);">
+              <input type="checkbox" name="remember-me" style="accent-color:var(--gold);"> Remember me
+            </label>
+            <span class="form-hint" style="margin:0;">Backend uses email + password</span>
+          </div>
+
+          <button type="submit" class="btn btn-navy" style="width:100%; justify-content:center; padding:12px;">
+            Sign In
+          </button>
+        </form>
+      </div>
+
+      <div style="background: linear-gradient(180deg, rgba(28,43,58,.04), rgba(196,151,61,.08)); border:1px solid var(--border-l); border-radius:22px; padding: 22px; display:flex; flex-direction:column; gap:16px;">
+        <div>
+          <div style="font-size:18px; font-weight:800; color:var(--navy); margin-bottom:4px;">Demo accounts</div>
+          <div class="form-hint" style="margin:0;">These accounts are seeded by the database seeder and can be used immediately after startup.</div>
+        </div>
+
+        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+            <div>
+              <div style="font-weight:800; color:var(--navy);">Admin</div>
+              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Full access to the system</div>
+            </div>
+            <span class="badge badge-navy">ADMIN</span>
+          </div>
+          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
+            <div><strong>Email:</strong> admin@luxestay.com</div>
+            <div><strong>Password:</strong> admin123</div>
+          </div>
+        </div>
+
+        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+            <div>
+              <div style="font-weight:800; color:var(--navy);">Receptionist</div>
+              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Bookings, guests and billing</div>
+            </div>
+            <span class="badge badge-warning">RECEPTIONIST</span>
+          </div>
+          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
+            <div><strong>Email:</strong> reception@luxestay.com</div>
+            <div><strong>Password:</strong> reception123</div>
+          </div>
+        </div>
+
+        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+            <div>
+              <div style="font-weight:800; color:var(--navy);">Housekeeping</div>
+              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Room status and task board</div>
+            </div>
+            <span class="badge badge-info">HOUSEKEEPING</span>
+          </div>
+          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
+            <div><strong>Email:</strong> housekeeper@luxestay.com</div>
+            <div><strong>Password:</strong> clean123</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/js/main.js}"></script>
+  <script>
+    function fillDemoAccount() {
+      const role = document.getElementById('role').value;
+      const map = {
+        ADMIN: { email: 'admin@luxestay.com', password: 'admin123' },
+        RECEPTIONIST: { email: 'reception@luxestay.com', password: 'reception123' },
+        HOUSEKEEPING: { email: 'housekeeper@luxestay.com', password: 'clean123' }
+      };
+      const account = map[role] || map.RECEPTIONIST;
+      document.getElementById('username').value = account.email;
+      document.getElementById('password').value = account.password;
+    }
+
+    document.addEventListener('DOMContentLoaded', fillDemoAccount);
+  </script>
+</body>
+</html>

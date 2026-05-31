@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<body>
+<nav th:fragment="sidebar(activePage)" class="sidebar">
+
+  <!-- Brand -->
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="sb-logo-name">LuxeStay</div>
+        <div class="sb-logo-sub">HMS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <div class="sb-section">
+    <div class="sb-label">Overview</div>
+    <a th:href="@{/dashboard}"
+       th:classappend="${activePage=='dashboard'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+      </svg>
+      Dashboard
+    </a>
+  </div>
+
+  <!-- Front Desk — Admin + Receptionist -->
+  <div class="sb-section" sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')">
+    <div class="sb-label">Front Desk</div>
+
+    <a th:href="@{/bookings}"
+       th:classappend="${activePage=='bookings'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Bookings
+      <span class="nav-badge" th:if="${reservedBookings != null and reservedBookings > 0}"
+            th:text="${reservedBookings}"></span>
+    </a>
+
+    <a th:href="@{/guests}"
+       th:classappend="${activePage=='guests'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+      </svg>
+      Guests
+    </a>
+
+    <a th:href="@{/rooms}"
+       th:classappend="${activePage=='rooms'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Rooms
+    </a>
+
+    <a th:href="@{/billing}"
+       th:classappend="${activePage=='billing'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="1" x2="12" y2="23"/>
+        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+      </svg>
+      Billing
+      <span class="nav-badge" th:if="${unpaidBills != null and unpaidBills > 0}"
+            th:text="${unpaidBills}"></span>
+    </a>
+  </div>
+
+  <!-- Operations — Admin + Housekeeping + Food Service -->
+  <div class="sb-section" sec:authorize="hasAnyRole('ADMIN','HOUSEKEEPING','FOOD_SERVICE')">
+    <div class="sb-label">Operations</div>
+
+    <a th:href="@{/housekeeping}"
+       th:classappend="${activePage=='housekeeping'} ? ' active'"
+       class="nav-item"
+       sec:authorize="hasAnyRole('ADMIN','HOUSEKEEPING')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="4 15 4 4 20 4"/><polyline points="4 20 20 20"/><line x1="12" y1="4" x2="12" y2="20"/>
+      </svg>
+      Housekeeping
+      <span class="nav-badge" th:if="${pendingHKTasks != null and pendingHKTasks > 0}"
+            th:text="${pendingHKTasks}"></span>
+    </a>
+
+    <a th:href="@{/food-orders}"
+       th:classappend="${activePage=='food'} ? ' active'"
+       class="nav-item"
+       sec:authorize="hasAnyRole('ADMIN','FOOD_SERVICE','RECEPTIONIST')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8h1a4 4 0 010 8h-1"/>
+        <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+        <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+      </svg>
+      Food Orders
+      <span class="nav-badge" th:if="${pendingFoodOrders != null and pendingFoodOrders > 0}"
+            th:text="${pendingFoodOrders}"></span>
+    </a>
+  </div>
+
+  <!-- Admin only -->
+  <div class="sb-section" sec:authorize="hasRole('ADMIN')">
+    <div class="sb-label">Administration</div>
+
+    <a th:href="@{/inventory}"
+       th:classappend="${activePage=='inventory'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+      </svg>
+      Inventory
+      <span class="nav-badge" th:if="${lowStockCount != null and lowStockCount > 0}"
+            th:text="${lowStockCount}"></span>
+    </a>
+
+    <a th:href="@{/staff}"
+       th:classappend="${activePage=='staff'} ? ' active'"
+       class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/>
+      </svg>
+      Staff
+    </a>
+  </div>
+
+  <!-- User footer -->
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar"
+           th:text="${#strings.substring(#authentication.name, 0, 2).toUpperCase()}">AD</div>
+      <div style="flex:1; min-width:0;">
+        <div class="sb-uname"
+             style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+             th:text="${#authentication.name}">admin@luxestay.com</div>
+        <div class="sb-urole"
+             th:text="${#authorization.expr('hasRole(''ADMIN'')')        ? 'Administrator'  :
+                       #authorization.expr('hasRole(''RECEPTIONIST'')')  ? 'Receptionist'   :
+                       #authorization.expr('hasRole(''HOUSEKEEPING'')')  ? 'Housekeeping'   :
+                       #authorization.expr('hasRole(''FOOD_SERVICE'')')  ? 'Food Service'   : 'Staff'}">Role</div>
+      </div>
+      <a th:href="@{/logout}" class="sb-logout" title="Sign out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

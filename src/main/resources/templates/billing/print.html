@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'Invoice #INV-' + ${bill.id} + ' — LuxeStay'">Invoice</title>
+  <link rel="stylesheet" href="/main.css" th:href="@{/main.css}">
+  <style>
+    @media print {
+      body { background: white !important; }
+      .no-print { display: none !important; }
+      .invoice-card { box-shadow: none !important; border: none !important; }
+    }
+    body { background: var(--cream); display: flex; justify-content: center; padding: 40px 20px; }
+    .invoice-card {
+      background: white; border-radius: var(--r-lg); width: 680px;
+      box-shadow: var(--sh-md); overflow: hidden;
+    }
+    .inv-header {
+      background: var(--navy); padding: 36px 40px; display: flex;
+      justify-content: space-between; align-items: flex-start;
+    }
+    .inv-logo-name { font-family: var(--fd); font-size: 28px; color: #fff; font-weight: 600; }
+    .inv-logo-sub  { font-size: 11px; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+    .inv-label { font-family: var(--fd); font-size: 22px; color: var(--gold); font-weight: 600; }
+    .inv-number { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 4px; }
+    .inv-body { padding: 36px 40px; }
+    .inv-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 32px; }
+    .inv-meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 6px; }
+    .inv-meta-val   { font-size: 14px; color: var(--text); line-height: 1.5; }
+    .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+    .inv-table th { background: var(--cream); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    .inv-table td { padding: 12px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border-l); }
+    .inv-table tr:last-child td { border-bottom: none; }
+    .inv-totals { background: var(--cream); border-radius: var(--r); padding: 18px 20px; margin-bottom: 28px; }
+    .inv-totals-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13.5px; }
+    .inv-totals-row.grand { border-top: 2px solid var(--border); margin-top: 10px; padding-top: 14px; font-size: 15px; font-weight: 600; }
+    .inv-grand-amount { font-family: var(--fd); font-size: 24px; color: var(--gold); }
+    .inv-footer { border-top: 1px solid var(--border); padding: 20px 40px; text-align: center; font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="invoice-card">
+    <!-- Header -->
+    <div class="inv-header">
+      <div>
+        <div class="inv-logo-name">LuxeStay</div>
+        <div class="inv-logo-sub">Hotel Management System</div>
+      </div>
+      <div style="text-align:right">
+        <div class="inv-label">INVOICE</div>
+        <div class="inv-number" th:text="'#INV-' + ${bill.id}">INV-001</div>
+      </div>
+    </div>
+
+    <div class="inv-body">
+      <!-- Meta info -->
+      <div class="inv-meta">
+        <div>
+          <div class="inv-meta-label">Billed To</div>
+          <div class="inv-meta-val">
+            <strong th:text="${bill.booking.guest.fullName}">Guest Name</strong><br>
+            <span th:text="${bill.booking.guest.email}">email</span><br>
+            <span th:text="${bill.booking.guest.phone}">phone</span>
+          </div>
+        </div>
+        <div>
+          <div class="inv-meta-label">Invoice Details</div>
+          <div class="inv-meta-val">
+            <span style="color:var(--muted)">Issue Date:</span>
+            <span th:text="${#temporals.format(bill.createdAt,'MMMM dd, yyyy')}">Date</span><br>
+            <span style="color:var(--muted)">Booking:</span>
+            <span th:text="'#BK-' + ${bill.booking.id}">BK-001</span><br>
+            <span style="color:var(--muted)">Payment:</span>
+            <span th:text="${bill.booking.paymentMethod}">CASH</span><br>
+            <span style="color:var(--muted)">Status:</span>
+            <span class="badge"
+              th:classappend="${bill.status.name()=='PAID'} ? 'badge-success' : 'badge-warning'"
+              th:text="${bill.status}">STATUS</span>
+          </div>
+        </div>
+        <div>
+          <div class="inv-meta-label">Stay Period</div>
+          <div class="inv-meta-val">
+            <span style="color:var(--muted)">Check-in:</span>
+            <span th:text="${#temporals.format(bill.booking.checkInDate,'MMM dd, yyyy')}">Date</span><br>
+            <span style="color:var(--muted)">Check-out:</span>
+            <span th:text="${#temporals.format(bill.booking.checkOutDate,'MMM dd, yyyy')}">Date</span><br>
+            <span style="color:var(--muted)">Nights:</span>
+            <span th:text="${#temporals.between(bill.booking.checkInDate,bill.booking.checkOutDate).getDays()}">0</span>
+          </div>
+        </div>
+        <div>
+          <div class="inv-meta-label">Room</div>
+          <div class="inv-meta-val">
+            <strong th:text="'Room ' + ${bill.booking.room.roomNumber}">Room</strong><br>
+            <span th:text="${bill.booking.room.category.name}">Category</span><br>
+            <span style="color:var(--muted)">Rate: </span>
+            <span th:text="'$' + ${bill.booking.room.category.pricePerNight} + '/night'">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line items -->
+      <table class="inv-table">
+        <thead>
+          <tr><th>Description</th><th style="text-align:right">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Room Charges —
+              <span th:text="${bill.booking.room.category.name}">Category</span> ×
+              <span th:text="${#temporals.between(bill.booking.checkInDate,bill.booking.checkOutDate).getDays()}">0</span> nights
+            </td>
+            <td style="text-align:right;font-family:var(--fd);color:var(--navy)"
+                th:text="'$' + ${#numbers.formatDecimal(bill.roomCharges,0,'COMMA',2,'POINT')}">$0</td>
+          </tr>
+          <tr>
+            <td>Food &amp; Beverage Services</td>
+            <td style="text-align:right;font-family:var(--fd);color:var(--navy)"
+                th:text="'$' + ${#numbers.formatDecimal(bill.foodCharges,0,'COMMA',2,'POINT')}">$0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+      <div class="inv-totals">
+        <div class="inv-totals-row">
+          <span style="color:var(--muted)">Subtotal</span>
+          <span th:text="'$' + ${#numbers.formatDecimal(bill.totalAmount,0,'COMMA',2,'POINT')}">$0</span>
+        </div>
+        <div class="inv-totals-row">
+          <span style="color:var(--muted)">Tax (0%)</span>
+          <span>$0.00</span>
+        </div>
+        <div class="inv-totals-row grand">
+          <span>Total Amount Due</span>
+          <span class="inv-grand-amount"
+                th:text="'$' + ${#numbers.formatDecimal(bill.totalAmount,0,'COMMA',2,'POINT')}">$0</span>
+        </div>
+      </div>
+
+      <!-- Payment note -->
+      <div th:if="${bill.status.name()=='PAID'}"
+           style="background:var(--s-bg);border:1px solid rgba(45,122,95,.2);border-radius:var(--r);
+                  padding:12px 16px;font-size:13px;color:var(--s-c);margin-bottom:20px">
+        ✓ Payment received on
+        <strong th:text="${#temporals.format(bill.paidAt,'MMMM dd, yyyy')}">Date</strong>
+      </div>
+
+      <!-- Print / Back buttons -->
+      <div class="no-print" style="display:flex;gap:10px;justify-content:flex-end">
+        <a th:href="@{/billing}" class="btn btn-outline">← Back to Billing</a>
+        <button onclick="window.print()" class="btn btn-navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+            <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Print Invoice
+        </button>
+      </div>
+    </div>
+
+    <div class="inv-footer">
+      Thank you for choosing LuxeStay. For enquiries, contact us at billing@luxestay.com
+    </div>
+  </div>
+</body>
+</html>

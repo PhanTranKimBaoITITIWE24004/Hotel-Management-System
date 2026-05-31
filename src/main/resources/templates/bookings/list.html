@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Bookings')"></head>
+<body>
+<div th:replace="fragments/sidebar :: sidebar('bookings')"></div>
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Bookings','Front Desk / Reservations')"></div>
+  <div class="page-content">
+    <div class="page-header"><div><div class="page-title-h1">Bookings</div></div></div>
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr th:each="b : ${bookings}">
+              <td th:text="'#' + ${b.id}">#1</td>
+              <td th:text="${b.guest != null ? b.guest.fullName : '-'}">Guest</td>
+              <td th:text="${b.room != null ? b.room.roomNumber : '-'}">101</td>
+              <td th:text="${b.checkInDate}">2026-05-31</td>
+              <td th:text="${b.checkOutDate}">2026-06-01</td>
+              <td th:text="${b.status}">RESERVED</td>
+            </tr>
+            <tr th:if="${bookings == null or #lists.isEmpty(bookings)}"><td colspan="6" class="table-empty">No bookings yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

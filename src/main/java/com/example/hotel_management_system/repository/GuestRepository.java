@@ -12,6 +12,8 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
 
     Optional<Guest> findByEmail(String email);
 
+    Optional<Guest> findByIdNumber(String idNumber);
+
     List<Guest> findByFullNameContainingIgnoreCase(String name);
 
     boolean existsByIdNumber(String idNumber);

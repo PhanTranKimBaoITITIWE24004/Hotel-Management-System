@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head('Dashboard')"></head>
+<body>
+
+<div th:replace="fragments/sidebar :: sidebar('dashboard')"></div>
+
+<div class="main-wrapper">
+  <div th:replace="fragments/topbar :: topbar('Dashboard','Hotel operations overview')"></div>
+
+  <div class="page-content">
+
+    <div class="metrics-grid">
+      <div class="metric-card mc-gold">
+        <div class="mc-label">Expected Check-ins</div>
+        <div class="mc-value"><span th:text="${expectedCheckIns != null ? expectedCheckIns : 0}">0</span></div>
+        <div class="mc-change"><span class="text-muted">Today</span></div>
+      </div>
+      <div class="metric-card mc-navy">
+        <div class="mc-label">Expected Check-outs</div>
+        <div class="mc-value"><span th:text="${expectedCheckOuts != null ? expectedCheckOuts : 0}">0</span></div>
+        <div class="mc-change"><span class="text-muted">Today</span></div>
+      </div>
+      <div class="metric-card mc-green">
+        <div class="mc-label">Vacant Rooms</div>
+        <div class="mc-value"><span th:text="${vacantRooms != null ? vacantRooms : 0}">0</span></div>
+        <div class="mc-change"><span class="text-muted">Ready to assign</span></div>
+      </div>
+      <div class="metric-card mc-red">
+        <div class="mc-label">Occupancy Rate</div>
+        <div class="mc-value"><span th:text="${occupancyRate != null ? occupancyRate : 0}">0</span>%</div>
+        <div class="mc-change"><span class="text-muted">Current occupancy</span></div>
+      </div>
+    </div>
+
+    <div class="dash-grid-2" style="margin-top:20px; align-items:start;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Room Matrix</div>
+            <div class="card-subtitle">Visual room status overview</div>
+          </div>
+          <div class="card-actions"><a th:href="@{/rooms}" class="btn btn-outline btn-sm">Manage rooms</a></div>
+        </div>
+
+        <div class="occ-legend" style="margin-bottom:14px;">
+          <div class="occ-leg-item"><span class="occ-leg-dot" style="background: var(--s-c);"></span> Available</div>
+          <div class="occ-leg-item"><span class="occ-leg-dot" style="background: var(--d-c);"></span> Occupied</div>
+          <div class="occ-leg-item"><span class="occ-leg-dot" style="background: var(--i-c);"></span> Cleaning</div>
+          <div class="occ-leg-item"><span class="occ-leg-dot" style="background: var(--muted);"></span> Maintenance</div>
+        </div>
+
+        <div th:if="${rooms != null and !#lists.isEmpty(rooms)}" class="rooms-grid" style="grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px;">
+          <div th:each="room : ${rooms}"
+               class="room-card"
+               th:classappend="${room.status != null ? ' ' + #strings.toLowerCase(room.status) : ' available'}"
+               style="padding:12px; min-height:auto;">
+            <div class="room-card-header" style="margin-bottom:8px;">
+              <div class="room-number" th:text="${room.roomNumber}">101</div>
+              <div class="room-type-label" th:text="${room.categoryName != null ? room.categoryName : 'Room'}">Standard</div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span class="badge" th:text="${room.status}">AVAILABLE</span>
+              <span class="text-muted" style="font-size:12px;" th:text="${room.floor != null ? 'Floor ' + room.floor : 'No floor'}">Floor 1</span>
+            </div>
+          </div>
+        </div>
+
+        <div th:if="${rooms == null or #lists.isEmpty(rooms)}" class="table-empty" style="padding:32px 20px;">
+          No rooms found
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Quick Alerts</div>
+            <div class="card-subtitle">Pending service requests and late departures</div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot red"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${pendingServiceRequests != null ? pendingServiceRequests : 0}">0</strong> service requests</div>
+              <div class="tl-sub">Unprocessed room service or housekeeping tasks</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot gold"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${overdueCheckOuts != null ? overdueCheckOuts : 0}">0</strong> overdue check-outs</div>
+              <div class="tl-sub">Guests who should have left already</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot navy"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${lowStockItems != null ? #lists.size(lowStockItems) : 0}">0</strong> low stock warnings</div>
+              <div class="tl-sub"><a th:href="@{/inventory}" style="color:var(--gold);">Review inventory →</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px; padding:14px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
+          <div style="font-weight:700; color:var(--navy); margin-bottom:10px;">Quick actions</div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px;">
+            <a th:href="@{/bookings/new}" class="btn btn-gold">New Booking</a>
+            <a th:href="@{/housekeeping}" class="btn btn-outline">Housekeeping</a>
+            <a th:href="@{/billing}" class="btn btn-outline">Billing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid-2" style="margin-top:20px; align-items:start;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Today's Bookings</div>
+            <div class="card-subtitle">Simple list from controller data</div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>#</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="booking : ${bookings}">
+                <td th:text="${booking.id}">1</td>
+                <td th:text="${booking.guestName != null ? booking.guestName : (booking.guest != null ? booking.guest.fullName : '-')}">Guest</td>
+                <td th:text="${booking.roomNumber != null ? booking.roomNumber : (booking.room != null ? booking.room.roomNumber : '-')}">101</td>
+                <td th:text="${booking.checkInDate != null ? booking.checkInDate : '-'}">2026-05-31</td>
+                <td th:text="${booking.checkOutDate != null ? booking.checkOutDate : '-'}">2026-06-01</td>
+                <td><span class="badge" th:text="${booking.status}">RESERVED</span></td>
+              </tr>
+              <tr th:if="${bookings == null or #lists.isEmpty(bookings)}">
+                <td colspan="6" class="table-empty">No bookings yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Summary</div>
+            <div class="card-subtitle">Simple counts from the backend</div>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot green"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${inventoryItems != null ? #lists.size(inventoryItems) : 0}">0</strong> inventory items</div>
+              <div class="tl-sub">Tracked stock items</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot navy"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${staffMembers != null ? #lists.size(staffMembers) : 0}">0</strong> staff members</div>
+              <div class="tl-sub"><a th:href="@{/staff}" style="color:var(--gold);">Manage staff →</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot gold"></div>
+            <div class="tl-body">
+              <div class="tl-title"><strong th:text="${categories != null ? #lists.size(categories) : 0}">0</strong> room categories</div>
+              <div class="tl-sub">Configured room types</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/main.js}"></script>
+</body>
+</html>

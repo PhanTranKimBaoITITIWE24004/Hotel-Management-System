@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--/* Confirm dialog — include once per page near </body>: <div th:replace="fragments/confirm-dialog :: dialog"></div> */-->
+<div th:fragment="dialog" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon danger" id="confirm-icon-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           style="color: var(--d-c);">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+    <div class="confirm-title" id="confirm-title">Confirm action</div>
+    <div class="confirm-msg" id="confirm-msg">Are you sure you want to continue?</div>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" id="confirm-cancel" type="button">Cancel</button>
+      <button class="btn btn-danger"  id="confirm-ok"     type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container (populated by JS) -->
+<div th:fragment="toasts" id="toast-container" class="toast-container"></div>
+
+<!-- Flash message bridge — server-side flash → JS toast -->
+<div th:fragment="flash" style="display:none;"
+     th:attr="data-success=${successMessage}, data-error=${errorMessage}, data-warning=${warningMessage}"
+     id="flash-bridge"></div>
+</body>
+</html>
