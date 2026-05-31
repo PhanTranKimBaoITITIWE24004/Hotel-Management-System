@@ -2,9 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="fragments/head :: head('Login')"></head>
 <body class="login-page">
-  <div class="login-card" style="width: 920px; max-width: calc(100vw - 32px);">
-    <div style="display:grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: stretch;">
-
+  <div class="login-card" style="width: 500px;">
       <div style="padding: 12px 6px 12px 0;">
         <div class="login-logo" style="margin-bottom: 22px;">
           <div class="login-logo-icon">
@@ -63,55 +61,6 @@
             Sign In
           </button>
         </form>
-      </div>
-
-      <div style="background: linear-gradient(180deg, rgba(28,43,58,.04), rgba(196,151,61,.08)); border:1px solid var(--border-l); border-radius:22px; padding: 22px; display:flex; flex-direction:column; gap:16px;">
-        <div>
-          <div style="font-size:18px; font-weight:800; color:var(--navy); margin-bottom:4px;">Demo accounts</div>
-          <div class="form-hint" style="margin:0;">These accounts are seeded by the database seeder and can be used immediately after startup.</div>
-        </div>
-
-        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-            <div>
-              <div style="font-weight:800; color:var(--navy);">Admin</div>
-              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Full access to the system</div>
-            </div>
-            <span class="badge badge-navy">ADMIN</span>
-          </div>
-          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
-            <div><strong>Email:</strong> admin@luxestay.com</div>
-            <div><strong>Password:</strong> admin123</div>
-          </div>
-        </div>
-
-        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-            <div>
-              <div style="font-weight:800; color:var(--navy);">Receptionist</div>
-              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Bookings, guests and billing</div>
-            </div>
-            <span class="badge badge-warning">RECEPTIONIST</span>
-          </div>
-          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
-            <div><strong>Email:</strong> reception@luxestay.com</div>
-            <div><strong>Password:</strong> reception123</div>
-          </div>
-        </div>
-
-        <div class="role-card" style="padding:16px; border:1px solid var(--border-l); border-radius:16px; background:#fff;">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-            <div>
-              <div style="font-weight:800; color:var(--navy);">Housekeeping</div>
-              <div style="font-size:13px; color:var(--muted); margin-top:4px;">Room status and task board</div>
-            </div>
-            <span class="badge badge-info">HOUSEKEEPING</span>
-          </div>
-          <div style="margin-top:12px; font-size:13px; line-height:1.7; color:var(--text);">
-            <div><strong>Email:</strong> housekeeper@luxestay.com</div>
-            <div><strong>Password:</strong> clean123</div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

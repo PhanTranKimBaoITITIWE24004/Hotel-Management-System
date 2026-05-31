@@ -1,6 +1,5 @@
 package com.example.hotel_management_system.controller.api;
 
-<<<<<<< HEAD
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -19,23 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-=======
->>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
 import com.example.hotel_management_system.dto.RoomDTO;
 import com.example.hotel_management_system.model.Room;
 import com.example.hotel_management_system.model.RoomCategory;
 import com.example.hotel_management_system.service.RoomService;
-<<<<<<< HEAD
-=======
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
->>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -57,11 +43,7 @@ public class RoomRestController {
         return ResponseEntity.ok(roomService.getRoomDTOById(id));
     }
 
-<<<<<<< HEAD
     @PostMapping("/new")
-=======
-    @PostMapping
->>>>>>> ea14cc387d9e4cdde4e20a80bb223d7c1d68f6cd
     public ResponseEntity<Room> createRoom(@RequestBody Room room, @RequestParam Long categoryId) {
         Room createdRoom = roomService.createRoom(room, categoryId);
         return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
