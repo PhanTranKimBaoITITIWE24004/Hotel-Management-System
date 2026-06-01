@@ -1,17 +1,19 @@
 package com.example.hotel_management_system.service.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.hotel_management_system.exception.ResourceNotFoundException;
 import com.example.hotel_management_system.model.Bill;
 import com.example.hotel_management_system.model.Booking;
 import com.example.hotel_management_system.repository.BillRepository;
 import com.example.hotel_management_system.repository.FoodOrderRepository;
 import com.example.hotel_management_system.service.BillService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @Transactional
@@ -75,5 +77,10 @@ public class BillServiceImpl implements BillService {
     public Bill getBillById(Long id) {
         return billRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bill not found with ID: " + id));
+    }
+
+    @Override
+    public Optional<Bill> findBillByBookingId(Long bookingId) {
+        return billRepository.findByBookingId(bookingId);
     }
 }

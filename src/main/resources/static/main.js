@@ -133,7 +133,7 @@ document.querySelectorAll('.alert[data-auto-dismiss]').forEach(el => {
   setTimeout(() => el.remove(), 4000);
 });
 
-//  Occupancy cells tooltip ─
+//  Occupancy cells tooltip 
 document.querySelectorAll('.occ-cell[title]').forEach(cell => {
   cell.setAttribute('aria-label', cell.title);
 });
@@ -153,7 +153,7 @@ if (roomChargeInput && foodChargeInput && totalPreview) {
   updateTotal();
 }
 
-//  Toggle room view (grid ↔ table) ─
+//  Toggle room view (grid ↔ table) 
 const viewToggle = document.getElementById('view-toggle');
 const roomGrid   = document.getElementById('room-grid-view');
 const roomTable  = document.getElementById('room-table-view');

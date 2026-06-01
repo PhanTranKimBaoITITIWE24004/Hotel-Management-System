@@ -1,9 +1,16 @@
 package com.example.hotel_management_system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.hotel_management_system.dto.BookingRequestDTO;
 import com.example.hotel_management_system.dto.BookingResponseDTO;
 import com.example.hotel_management_system.exception.ResourceNotFoundException;
-import com.example.hotel_management_system.model.Bill;
 import com.example.hotel_management_system.model.Booking;
 import com.example.hotel_management_system.model.Guest;
 import com.example.hotel_management_system.model.Room;
@@ -12,13 +19,6 @@ import com.example.hotel_management_system.service.BillService;
 import com.example.hotel_management_system.service.BookingService;
 import com.example.hotel_management_system.service.GuestService;
 import com.example.hotel_management_system.service.RoomService;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -163,16 +163,13 @@ public class BookingServiceImpl implements BookingService {
         dto.setPaymentMethod(booking.getPaymentMethod().name());
         dto.setStatus(booking.getStatus().name());
 
-        // Attach billing data if it exists
-        try {
-            Bill bill = billService.getBillByBookingId(booking.getId());
+        // Safely check for the bill without throwing an exception
+        billService.findBillByBookingId(booking.getId()).ifPresent(bill -> {
             dto.setRoomCharges(bill.getRoomCharges());
             dto.setFoodCharges(bill.getFoodCharges());
             dto.setTotalAmount(bill.getTotalAmount());
             dto.setBillStatus(bill.getStatus().name());
-        } catch (Exception e) {
-            // Bill is not created yet
-        }
+        });
 
         return dto;
     }
