@@ -70,6 +70,9 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(Booking.BookingStatus.RESERVED);
 
         Booking savedBooking = bookingRepository.save(booking);
+        // Immediately generate the initial bill for this booking
+        billService.createBillForBooking(savedBooking);
+
         return convertToDTO(savedBooking);
     }
 
