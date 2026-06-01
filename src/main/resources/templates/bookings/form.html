@@ -3,9 +3,12 @@
 <head th:replace="fragments/head :: head('New Booking')"></head>
 <body>
 <div th:replace="fragments/sidebar :: sidebar('bookings')"></div>
+
 <div class="main-wrapper">
   <div th:replace="fragments/topbar :: topbar('New Booking','Front Desk / Reservations')"></div>
+
   <div class="page-content">
+
     <div class="page-header">
       <div>
         <div class="page-title-h1">Create Booking</div>
@@ -16,58 +19,94 @@
       </div>
     </div>
 
-    <div class="card" style="max-width: 980px;">
-      <form th:action="@{/api/bookings}" method="post" id="booking-create-form">
-        <div class="form-row">
+    <!-- Error shown when the server rejects the booking (re-shown form) -->
+    <div th:if="${errorMessage}" class="alert alert-danger" style="max-width:980px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span th:text="${errorMessage}">Something went wrong</span>
+    </div>
+
+    <!-- No guests yet — a booking needs a guest -->
+    <div th:if="${guests == null or #lists.isEmpty(guests)}" class="card" style="max-width:980px;">
+      <div class="card-body" style="text-align:center; padding:40px;">
+        <div class="card-title" style="margin-bottom:8px;">No guests yet</div>
+        <div class="text-muted" style="margin-bottom:18px;">
+          You need at least one registered guest before you can create a booking.
+        </div>
+        <a th:href="@{/guests/new}" class="btn btn-gold">+ Register a guest first</a>
+      </div>
+    </div>
+
+    <!-- Booking form — plain HTML POST, no JavaScript -->
+    <div class="card" style="max-width:980px;" th:unless="${guests == null or #lists.isEmpty(guests)}">
+      <form th:action="@{/bookings}" method="post">
+        <div class="card-body">
+
+          <div class="form-section-title">Guest</div>
           <div class="form-group">
-            <label for="guestId" class="required">Guest</label>
+            <label for="guestId" class="required">Choose a guest</label>
             <select id="guestId" name="guestId" class="form-control" required>
-              <option value="">Select guest</option>
-              <option th:each="g : ${guests}" th:value="${g.id}" th:text="${g.fullName}">Guest</option>
+              <option value="">— Select a guest —</option>
+              <option th:each="g : ${guests}"
+                      th:value="${g.id}"
+                      th:text="${g.fullName
+                                 + (g.phone != null ? '  ·  ' + g.phone : '')
+                                 + (g.email != null ? '  ·  ' + g.email : '')}">Nguyen Van A · 0901234567</option>
             </select>
+            <div class="form-hint">Don't see the guest? <a th:href="@{/guests/new}" style="color:var(--gold);">Register a new guest</a>.</div>
           </div>
+
+          <div class="form-section-title" style="margin-top:8px;">Room &amp; Stay</div>
           <div class="form-group">
             <label for="roomId" class="required">Room</label>
             <select id="roomId" name="roomId" class="form-control" required>
-              <option value="">Select room</option>
-              <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.roomNumber + ' — ' + (r.categoryName != null ? r.categoryName : 'Room')}">101</option>
+              <option value="">— Select a room —</option>
+              <option th:each="r : ${rooms}"
+                      th:value="${r.id}"
+                      th:text="${r.roomNumber + ' — ' + (r.categoryName != null ? r.categoryName : 'Room')}">101 — Deluxe</option>
             </select>
           </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="checkInDate" class="required">Check-in Date</label>
+              <input id="checkInDate" name="checkInDate" type="date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="checkOutDate" class="required">Check-out Date</label>
+              <input id="checkOutDate" name="checkOutDate" type="date" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="paymentMethod" class="required">Payment Method</label>
+              <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+                <option value="ONLINE">Online</option>
+                <option value="CASH">Cash</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="status">Status</label>
+              <input id="status" class="form-control" value="RESERVED" disabled>
+              <div class="form-hint">New bookings always start as Reserved.</div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="checkInDate" class="required">Check-in Date</label>
-            <input id="checkInDate" name="checkInDate" type="date" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="checkOutDate" class="required">Check-out Date</label>
-            <input id="checkOutDate" name="checkOutDate" type="date" class="form-control" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="paymentMethod" class="required">Payment Method</label>
-            <select id="paymentMethod" name="paymentMethod" class="form-control" required>
-              <option value="ONLINE">Online</option>
-              <option value="CASH">Cash</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="status">Status</label>
-            <input id="status" class="form-control" value="RESERVED" disabled>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+        <div class="card-footer" style="justify-content:flex-end; background:var(--white);">
           <a th:href="@{/bookings}" class="btn btn-outline">Cancel</a>
           <button type="submit" class="btn btn-gold">Create Booking</button>
         </div>
       </form>
     </div>
+
   </div>
 </div>
+
+<!-- Shared site script only (sidebar / topbar) — no booking logic here -->
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

@@ -14,18 +14,30 @@
       <div class="page-header-left">
         <div class="page-title-h1">Room Inventory</div>
         <div class="page-title-sub">
-          <span th:text="${totalRooms != null ? totalRooms : 0}">0</span> rooms across
-          <span th:text="${totalCategories != null ? totalCategories : 0}">0</span> categories
+          <span th:text="${totalRooms != null ? totalRooms : (rooms != null ? #lists.size(rooms) : 0)}">0</span> rooms across
+          <span th:text="${totalCategories != null ? totalCategories : (categories != null ? #lists.size(categories) : 0)}">0</span> categories
         </div>
       </div>
       <div class="page-header-actions">
-        <a th:href="@{/rooms/new}" class="btn btn-gold" sec:authorize="hasRole('ADMIN')">Add Room</a>
+        <button type="button" id="add-room-btn" class="btn btn-gold" sec:authorize="hasRole('ADMIN')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Room
+        </button>
       </div>
     </div>
 
     <div class="card">
+      <!-- Search · filter · sort toolbar -->
       <div class="filter-bar">
-        <div class="search-wrap"><input id="room-search" class="search-input" placeholder="Search by room number…" type="text"></div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input id="room-search" class="search-input" placeholder="Search by room number…" type="text">
+        </div>
+
         <select id="status-filter" class="filter-select">
           <option value="">All Statuses</option>
           <option value="AVAILABLE">Available</option>
@@ -33,27 +45,141 @@
           <option value="CLEANING">Cleaning</option>
           <option value="MAINTENANCE">Maintenance</option>
         </select>
+
         <select id="category-filter" class="filter-select">
           <option value="">All Categories</option>
           <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Standard</option>
         </select>
+
+        <select id="sort-by" class="filter-select">
+          <option value="number">Sort: Room number</option>
+          <option value="floor">Sort: Floor</option>
+          <option value="status">Sort: Status</option>
+          <option value="category">Sort: Category</option>
+        </select>
+
+        <button type="button" id="sort-dir" class="btn btn-outline btn-sm" title="Toggle sort direction">
+          <span id="sort-dir-label">A → Z</span>
+        </button>
+
+        <span class="result-count" id="result-count">0 rooms</span>
       </div>
 
+      <!-- Room cards -->
       <div class="rooms-grid" id="rooms-grid">
         <div th:each="r : ${rooms}" class="room-card"
-             th:attr="data-status=${r.status},data-category=${r.categoryId != null ? r.categoryId : ''},data-number=${r.roomNumber}">
+             th:with="st=${#strings.toString(r.status)}"
+             th:attr="data-id=${r.id},
+                      data-status=${st},
+                      data-category=${r.categoryId != null ? r.categoryId : ''},
+                      data-categoryname=${r.categoryName != null ? r.categoryName : ''},
+                      data-number=${r.roomNumber},
+                      data-floor=${r.floor != null ? r.floor : ''}">
+
           <div class="room-card-header">
+            <span class="room-status-dot" th:classappend="${st}"></span>
             <div class="room-number" th:text="${r.roomNumber}">101</div>
             <div class="room-type-label" th:text="${r.categoryName != null ? r.categoryName : 'Room'}">Standard</div>
           </div>
+
           <div class="room-card-body">
-            <div class="room-meta">Floor <span th:text="${r.floor != null ? r.floor : '-'}">1</span></div>
-            <div class="room-meta">Status <span th:text="${r.status != null ? r.status : 'AVAILABLE'}">AVAILABLE</span></div>
+            <div class="room-meta">
+              <span class="room-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/>
+                </svg>
+                Floor <span th:text="${r.floor != null ? r.floor : '—'}">1</span>
+              </span>
+              <span class="badge status-badge"
+                    th:classappend="${st == 'AVAILABLE' ? 'badge-success' :
+                                     (st == 'OCCUPIED' ? 'badge-danger' :
+                                     (st == 'CLEANING' ? 'badge-info' : 'badge-neutral'))}"
+                    th:text="${st}">AVAILABLE</span>
+            </div>
+
+            <!-- Inline status editor → PATCH /api/rooms/{id}/status -->
+            <div class="form-group mb-0 mt-4">
+              <label>Change status</label>
+              <select class="form-control form-control-sm room-status-select">
+                <option value="AVAILABLE"   th:selected="${st == 'AVAILABLE'}">Available</option>
+                <option value="OCCUPIED"    th:selected="${st == 'OCCUPIED'}">Occupied</option>
+                <option value="CLEANING"    th:selected="${st == 'CLEANING'}">Cleaning</option>
+                <option value="MAINTENANCE" th:selected="${st == 'MAINTENANCE'}">Maintenance</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div th:if="${rooms == null or #lists.isEmpty(rooms)}" class="table-empty" style="grid-column:1/-1;">No rooms configured yet</div>
+
+        <!-- Shown when filters match nothing -->
+        <div id="filter-empty" class="table-empty" style="grid-column:1/-1; display:none;">
+          No rooms match your filters
+        </div>
+        <!-- Shown when there are no rooms at all -->
+        <div th:if="${rooms == null or #lists.isEmpty(rooms)}" class="table-empty" style="grid-column:1/-1;">
+          No rooms configured yet
+        </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Add Room modal -->
+<div class="modal-overlay" id="add-room-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Add New Room</div>
+      <button type="button" class="modal-close" data-close-modal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form id="add-room-form" novalidate>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ar-number" class="required">Room Number</label>
+            <input id="ar-number" name="roomNumber" type="text" class="form-control"
+                   placeholder="e.g. 101" maxlength="10" required>
+            <div class="invalid-feedback" id="ar-number-err" style="display:none;">Room number is required</div>
+          </div>
+          <div class="form-group">
+            <label for="ar-floor">Floor</label>
+            <input id="ar-floor" name="floor" type="number" class="form-control" placeholder="1" min="0" max="100">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ar-category" class="required">Room Category</label>
+          <select id="ar-category" name="categoryId" class="form-control" required>
+            <option value="">— Select a category —</option>
+            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}">Standard</option>
+          </select>
+          <div class="invalid-feedback" id="ar-category-err" style="display:none;">Please choose a category</div>
+        </div>
+
+        <div class="form-group mb-0">
+          <label for="ar-status">Status</label>
+          <select id="ar-status" name="status" class="form-control">
+            <option value="AVAILABLE">Available — ready for booking</option>
+            <option value="CLEANING">Cleaning — being prepared</option>
+            <option value="MAINTENANCE">Maintenance — out of service</option>
+          </select>
+          <div class="form-hint">"Occupied" is set automatically at check-in.</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-gold" id="ar-submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Create Room
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -61,5 +187,196 @@
 <div th:replace="fragments/confirm-dialog :: toasts"></div>
 <div th:replace="fragments/confirm-dialog :: flash"></div>
 <script th:src="@{/js/main.js}"></script>
+
+<!-- Page logic: search, filter, sort, status edit, add room -->
+<script>
+(function () {
+  const grid = document.getElementById('rooms-grid');
+  if (!grid) return;
+
+  const searchEl = document.getElementById('room-search');
+  const statusEl = document.getElementById('status-filter');
+  const catEl    = document.getElementById('category-filter');
+  const sortEl   = document.getElementById('sort-by');
+  const dirBtn   = document.getElementById('sort-dir');
+  const dirLabel = document.getElementById('sort-dir-label');
+  const countEl  = document.getElementById('result-count');
+  const emptyEl  = document.getElementById('filter-empty');
+
+  let dir = 'asc';
+  const BADGE = { AVAILABLE:'badge-success', OCCUPIED:'badge-danger', CLEANING:'badge-info', MAINTENANCE:'badge-neutral' };
+
+  const cards = () => Array.from(grid.querySelectorAll('.room-card'));
+
+  // lightweight toast (reuses existing .toast-container if present)
+  function toast(msg, type) {
+    let cont = document.querySelector('.toast-container');
+    if (!cont) { cont = document.createElement('div'); cont.className = 'toast-container'; document.body.appendChild(cont); }
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type || 'info');
+    const text = document.createElement('span'); text.textContent = msg;
+    const close = document.createElement('span'); close.className = 'toast-close'; close.innerHTML = '&times;';
+    close.onclick = () => t.remove();
+    t.appendChild(text); t.appendChild(close);
+    cont.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  // CSRF: pick up Spring Security token if the head fragment exposes it 
+  function csrfHeaders(base) {
+    base = base || {};
+    const m = document.querySelector('meta[name="_csrf"]');
+    const h = document.querySelector('meta[name="_csrf_header"]');
+    if (m && h) { base[h.getAttribute('content')] = m.getAttribute('content'); }
+    else {
+      const c = document.cookie.split('; ').find(x => x.startsWith('XSRF-TOKEN='));
+      if (c) base['X-XSRF-TOKEN'] = decodeURIComponent(c.split('=')[1]);
+    }
+    return base;
+  }
+
+  // filter + sort 
+  function apply() {
+    const q  = (searchEl.value || '').trim().toLowerCase();
+    const st = statusEl.value;
+    const ct = catEl.value;
+    let shown = 0;
+
+    cards().forEach(c => {
+      const matchQ  = !q  || (c.dataset.number || '').toLowerCase().includes(q);
+      const matchSt = !st || c.dataset.status === st;
+      const matchCt = !ct || c.dataset.category === ct;
+      const vis = matchQ && matchSt && matchCt;
+      c.style.display = vis ? '' : 'none';
+      if (vis) shown++;
+    });
+
+    sortCards();
+    countEl.textContent = shown + (shown === 1 ? ' room' : ' rooms');
+    emptyEl.style.display = shown === 0 ? '' : 'none';
+  }
+
+  function sortCards() {
+    const field = sortEl.value;
+    const sign  = dir === 'asc' ? 1 : -1;
+    const visible = cards().filter(c => c.style.display !== 'none');
+
+    visible.sort((a, b) => {
+      if (field === 'number' || field === 'floor') {
+        const na = parseFloat(a.dataset[field === 'number' ? 'number' : 'floor']);
+        const nb = parseFloat(b.dataset[field === 'number' ? 'number' : 'floor']);
+        if (!isNaN(na) && !isNaN(nb)) return (na - nb) * sign;
+        return (a.dataset.number || '').localeCompare(b.dataset.number || '') * sign;
+      }
+      const key = field === 'status' ? 'status' : 'categoryname';
+      return (a.dataset[key] || '').localeCompare(b.dataset[key] || '') * sign;
+    });
+
+    visible.forEach(c => grid.appendChild(c)); // re-order DOM
+  }
+
+  //  inline status editing → PATCH /api/rooms/{id}/status 
+  grid.addEventListener('change', async (e) => {
+    const sel = e.target.closest('.room-status-select');
+    if (!sel) return;
+    const card = sel.closest('.room-card');
+    const id   = card.dataset.id;
+    const next = sel.value;
+    const prev = card.dataset.status;
+    if (next === prev) return;
+
+    sel.disabled = true;
+    try {
+      const res = await fetch('/api/rooms/' + id + '/status', {
+        method: 'PATCH',
+        headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ status: next })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+
+      card.dataset.status = next;
+      const dot = card.querySelector('.room-status-dot');
+      if (dot) dot.className = 'room-status-dot ' + next;
+      const badge = card.querySelector('.status-badge');
+      if (badge) { badge.className = 'badge status-badge ' + (BADGE[next] || 'badge-neutral'); badge.textContent = next; }
+
+      toast('Room ' + (card.dataset.number || '') + ' set to ' + next, 'success');
+      apply();
+    } catch (err) {
+      sel.value = prev;
+      toast('Could not update status (' + err.message + ')', 'danger');
+    } finally {
+      sel.disabled = false;
+    }
+  });
+
+  //  add room modal to POST /api/rooms/new?categoryId=… 
+  const modal = document.getElementById('add-room-modal');
+  const addBtn = document.getElementById('add-room-btn');
+  const form = document.getElementById('add-room-form');
+
+  function openModal()  { if (modal) modal.classList.add('open'); }
+  function closeModal() { if (modal) { modal.classList.remove('open'); form.reset(); hideErr(); } }
+  function hideErr() {
+    document.getElementById('ar-number-err').style.display = 'none';
+    document.getElementById('ar-category-err').style.display = 'none';
+  }
+
+  if (addBtn) addBtn.addEventListener('click', openModal);
+  document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', closeModal));
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  if (form) form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideErr();
+
+    const roomNumber = document.getElementById('ar-number').value.trim();
+    const categoryId = document.getElementById('ar-category').value;
+    const floorRaw   = document.getElementById('ar-floor').value;
+    const status     = document.getElementById('ar-status').value;
+
+    let ok = true;
+    if (!roomNumber) { document.getElementById('ar-number-err').style.display = 'block'; ok = false; }
+    if (!categoryId) { document.getElementById('ar-category-err').style.display = 'block'; ok = false; }
+    if (!ok) return;
+
+    const body = { roomNumber: roomNumber, status: status };
+    if (floorRaw !== '') body.floor = parseInt(floorRaw, 10);
+
+    const btn = document.getElementById('ar-submit');
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/rooms/new?categoryId=' + encodeURIComponent(categoryId), {
+        method: 'POST',
+        headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        let msg = 'HTTP ' + res.status;
+        try { const j = await res.json(); if (j && (j.message || j.error)) msg = j.message || j.error; } catch (_) {}
+        throw new Error(msg);
+      }
+      toast('Room ' + roomNumber + ' created', 'success');
+      closeModal();
+      setTimeout(() => location.reload(), 600); // reload so the new card renders
+    } catch (err) {
+      toast('Could not create room (' + err.message + ')', 'danger');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // wire toolbar 
+  [searchEl, statusEl, catEl, sortEl].forEach(el => el && el.addEventListener('input', apply));
+  [statusEl, catEl, sortEl].forEach(el => el && el.addEventListener('change', apply));
+  if (dirBtn) dirBtn.addEventListener('click', () => {
+    dir = dir === 'asc' ? 'desc' : 'asc';
+    dirLabel.textContent = dir === 'asc' ? 'A → Z' : 'Z → A';
+    apply();
+  });
+
+  apply(); // initial render
+})();
+</script>
 </body>
 </html>

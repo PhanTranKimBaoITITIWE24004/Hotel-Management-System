@@ -4,28 +4,82 @@
 <body>
 <div th:replace="fragments/sidebar :: sidebar('bookings')"></div>
 <div class="main-wrapper">
-  <div th:replace="fragments/topbar :: topbar('Bookings','Front Desk / Reservations')"></div>
-  <div class="page-content">
-    <div class="page-header"><div><div class="page-title-h1">Bookings</div></div></div>
-    <div class="card">
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>#</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr th:each="b : ${bookings}">
-              <td th:text="'#' + ${b.id}">#1</td>
-              <td th:text="${b.guest != null ? b.guest.fullName : '-'}">Guest</td>
-              <td th:text="${b.room != null ? b.room.roomNumber : '-'}">101</td>
-              <td th:text="${b.checkInDate}">2026-05-31</td>
-              <td th:text="${b.checkOutDate}">2026-06-01</td>
-              <td th:text="${b.status}">RESERVED</td>
-            </tr>
-            <tr th:if="${bookings == null or #lists.isEmpty(bookings)}"><td colspan="6" class="table-empty">No bookings yet</td></tr>
-          </tbody>
-        </table>
-      </div>
+<div th:replace="fragments/topbar :: topbar('Bookings','Front Desk / Reservations')"></div>
+<div class="page-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title-h1">Bookings</div>
+            <div class="page-title-sub">
+                Manage reservations and guest stays
+            </div>
+        </div>
+        <div class="page-header-actions">
+            <a th:href="@{/bookings/new}" class="btn btn-gold">
+                + New Booking
+            </a>
+        </div>
     </div>
-  </div>
+    <div class="card">
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Guest</th>
+                    <th>Email</th>
+                    <th>Room</th>
+                    <th>Category</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Total Bill</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${bookings == null or #lists.isEmpty(bookings)}">
+                    <td colspan="10" class="table-empty">
+                        No bookings found
+                    </td>
+                </tr>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.id}">1</td>
+                    <td th:text="${booking.guestName}">
+                        Nguyen Van A
+                    </td>
+                    <td th:text="${booking.guestEmail}">
+                        nguyenvana@example.com
+                    </td>
+                    <td th:text="${booking.roomNumber}">
+                        101
+                    </td>
+                    <td th:text="${booking.roomCategory}">
+                        Deluxe
+                    </td>
+                    <td th:text="${booking.checkInDate}">
+                        2026-06-01
+                    </td>
+                    <td th:text="${booking.checkOutDate}">
+                        2026-06-03
+                    </td>
+                    <td th:text="${booking.paymentMethod}">
+                        CASH
+                    </td>
+                    <td>
+                        <span class="badge"
+                              th:text="${booking.status}">
+                            RESERVED
+                        </span>
+                    </td>
+                    <td th:text="${booking.totalAmount != null ? booking.totalAmount : 'N/A'}">
+                        0
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </div>
 <script th:src="@{/js/main.js}"></script>
 </body>

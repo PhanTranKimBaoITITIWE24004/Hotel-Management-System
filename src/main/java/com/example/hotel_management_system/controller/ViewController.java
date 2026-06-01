@@ -1,5 +1,8 @@
 package com.example.hotel_management_system.controller;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,8 +66,6 @@ public class ViewController {
         return "dashboard"; // Maps to templates/dashboard.html
     }
 
-    // ─────────────── Rooms ───────────────
-
     @GetMapping("/rooms")
     public String rooms(Model model) {
         var rooms = roomService.getAllRooms();
@@ -114,12 +115,54 @@ public class ViewController {
         return "bookings/list";
     }
 
-    @GetMapping({"/bookings/new", "/bookings/form"})
+    @GetMapping({"/bookings/new"})
     public String bookingForm(Model model) {
         model.addAttribute("booking", new BookingRequestDTO());
+        model.addAttribute("guests", guestService.getAllGuests());
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("categories", roomService.getAllCategories());
         return "bookings/form";
+    }
+
+    @PostMapping("/bookings")
+    public String createBooking(@RequestParam Long guestId,
+                                @RequestParam Long roomId,
+                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
+                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
+                                @RequestParam String paymentMethod,
+                                Model model) {
+        try {
+            // Basic date validation (previously done in the browser)
+            if (!checkOutDate.isAfter(checkInDate)) {
+                throw new IllegalArgumentException("Check-out date must be after the check-in date.");
+            }
+            if (checkInDate.isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("Check-in date cannot be in the past.");
+            }
+    
+            Guest guest = guestService.getGuestById(guestId);
+ 
+            BookingRequestDTO dto = new BookingRequestDTO();
+            dto.setGuestName(guest.getFullName());
+            dto.setGuestEmail(guest.getEmail());
+            dto.setGuestPhone(guest.getPhone());
+            dto.setGuestIdNumber(guest.getIdNumber());
+            dto.setIdType(guest.getIdType() != null ? guest.getIdType().name() : null);
+            dto.setRoomId(roomId);
+            dto.setCheckInDate(checkInDate);
+            dto.setCheckOutDate(checkOutDate);
+            dto.setPaymentMethod(paymentMethod);
+ 
+            bookingService.createBooking(dto);
+            return "redirect:/bookings";
+            
+        } catch (RuntimeException ex) {                 // re-show form with the error
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("guests", guestService.getAllGuests());
+            model.addAttribute("rooms", roomService.getAllRooms());
+            model.addAttribute("categories", roomService.getAllCategories());
+            return "bookings/form";
+        }
     }
 
     @GetMapping("/guests")
